@@ -18,7 +18,7 @@ router.get('/', function(req, res, next) {
   });
 });
 
-router.get('/:userID', [authenticate, isAdminAdvisorOrSameStudent], function(req, res, next) {
+router.get('/:userID', [authenticate], function(req, res, next) {
   res.locals.connection.query("SELECT * FROM users WHERE userID = ?", req.params.studentID, function(error, results, fields) {
     if (error) {
       res.status(500);
@@ -31,7 +31,7 @@ router.get('/:userID', [authenticate, isAdminAdvisorOrSameStudent], function(req
   });
 });
 
-router.put('/:userID', [authenticate, isAdminAdvisorOrSameStudent], function(req, res, next) {
+router.put('/:userID', [authenticate], function(req, res, next) {
   var errorMessage = validate(req.body);
   if (errorMessage.length > 2) {
     res.status(406);
@@ -53,7 +53,7 @@ router.put('/:userID', [authenticate, isAdminAdvisorOrSameStudent], function(req
   }
 });
 
-router.post('/', [authenticate, isAdminOrAdvisor], function(req, res, next) {
+router.post('/', [authenticate], function(req, res, next) {
   var errorMessage = validate(req.body);
   if (errorMessage.length > 2) {
     res.status(406);
@@ -75,7 +75,7 @@ router.post('/', [authenticate, isAdminOrAdvisor], function(req, res, next) {
   }
 });
 
-router.delete('/:userID', [authenticate, isAdminOrAdvisor], function(req, res, next) {
+router.delete('/:userID', [authenticate], function(req, res, next) {
   res.locals.connection.query("DELETE FROM users WHERE userID = ?", req.params.studentID, function(error, results, fields) {
     if (error) {
       res.status(500);

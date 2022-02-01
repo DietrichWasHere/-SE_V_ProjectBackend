@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET tutors listing. */
 router.get('/', function(req, res, next) {
-  res.locals.connection.query("SELECT * FROM tutors", function(error, results, fields) {
+  res.locals.connection.query("SELECT * FROM students", function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -19,7 +19,7 @@ router.get('/', function(req, res, next) {
 
 
 router.get('/:userID/:orgID', [authenticate], function(req, res, next) {
-  res.locals.connection.query("SELECT * FROM tutors WHERE userID = ? and  orgID = ?", req.params.advisorID, function(error, results, fields) {
+  res.locals.connection.query("SELECT * FROM students WHERE userID = ? and  orgID = ?", req.params.advisorID, function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -31,14 +31,14 @@ router.get('/:userID/:orgID', [authenticate], function(req, res, next) {
   });
 });
 
-router.put('/:userID/:orgID', [authenticate, isAdminOrSameAdvisor], function(req, res, next) {
+router.put('/:userID/:orgID', [authenticate], function(req, res, next) {
   var errorMessage = validate(req.body);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   }
   else {
-    res.locals.connection.query("UPDATE tutors SET ? WHERE userID=? and orgID = ?", [req.body, req.params.advisorID], function(error, results, fields) {
+    res.locals.connection.query("UPDATE students SET ? WHERE userID=? and orgID = ?", [req.body, req.params.advisorID], function(error, results, fields) {
       if (error) {
         res.status(500);
         res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -60,7 +60,7 @@ router.post('/', [authenticate, isAdmin], function(req, res, next) {
     res.send(errorMessage);
   }
   else {
-      res.locals.connection.query("INSERT INTO tutors SET ?", req.body, function(error, results, fields) {
+      res.locals.connection.query("INSERT INTO students SET ?", req.body, function(error, results, fields) {
       if (error) {
         res.status(500);
         res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -76,7 +76,7 @@ router.post('/', [authenticate, isAdmin], function(req, res, next) {
 });
 
 router.delete('/:userID/:orgID', [authenticate, isAdminOrAdvisor], function(req, res, next) {
-  res.locals.connection.query("DELETE FROM major_courses WHERE userID = ? AND orgID = ?", [req.params.majorID, req.params.courseNo], function(error, results, fields) {
+  res.locals.connection.query("DELETE FROM students WHERE userID = ? AND orgID = ?", [req.params.majorID, req.params.courseNo], function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
