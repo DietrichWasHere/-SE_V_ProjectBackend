@@ -10,6 +10,12 @@ var tutorsRouter = require('./routes/tutors');
 var supervisorsRouter = require('./routes/supervisors');
 var studentsRouter = require('./routes/students');
 var orgsRouter = require('./routes/orgs');
+var locationsRouter = require('./routes/locations');
+var availableTimesRouter = require('./routes/availableTimes');
+var appointmentsRouter = require('./routes/appointments');
+var subjectsRouter = require('./routes/subjects');
+var tutorSubjectsRouter = require('./routes/tutorSubjects');
+var requestsRouter = require('./routes/requests');
 
 
 var app = express();
@@ -30,6 +36,12 @@ app.use('/tutors', tutorsRouter);
 app.use('/supervisors', supervisorsRouter);
 app.use('/students', studentsRouter);
 app.use('/orgs', orgsRouter);
+app.use('/locations', locationsRouter);
+app.use('/availableTimes', availableTimesRouter);
+app.use('/appointments', appointmentsRouter);
+app.use('/subjects', subjectsRouter);
+app.use('/requestsSubjects', requestsRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

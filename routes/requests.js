@@ -1,9 +1,10 @@
 var express = require('express');
+const { authenticate } = require('../controllers/auth');
 var router = express.Router();
 
-/* GET tutors listing. */
+
 router.get('/', function(req, res, next) {
-  res.locals.connection.query("SELECT * FROM orgs", function(error, results, fields) {
+  res.locals.connection.query("SELECT SELECT * FROM requests", function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -18,8 +19,9 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.get('/:orgID', function(req, res, next) {
-  res.locals.connection.query("SELECT * FROM orgs WHERE orgID = ?", req.params.advisorID, function(error, results, fields) {
+// I don't know how much is needed here
+router.get('/:studentID/:orgID/:subjectID/:reqDate', function(req, res, next) {
+  res.locals.connection.query("SELECT * FROM requests WHERE studentID = ? and orgID = ? subjectID = ? and reqDate = ?", req.params.studentID, function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -31,14 +33,14 @@ router.get('/:orgID', function(req, res, next) {
   });
 });
 
-router.put('/:orgID', [authenticate, isAdminOrSameAdvisor], function(req, res, next) {
+router.put('/:studentID/:orgID/:subjectID/:reqDate', function(req, res, next) {
   var errorMessage = validate(req.body);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   }
   else {
-    res.locals.connection.query("UPDATE orgs SET ? WHERE orgID = ?", [req.body, req.params.advisorID], function(error, results, fields) {
+    res.locals.connection.query("UPDATE requests WHERE studentID = ? and orgID = ? subjectID = ? and reqDate = ?", [req.body, req.params.studentID], function(error, results, fields) {
       if (error) {
         res.status(500);
         res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -53,14 +55,14 @@ router.put('/:orgID', [authenticate, isAdminOrSameAdvisor], function(req, res, n
   }
 });
 
-router.post('/', [authenticate, isAdmin], function(req, res, next) {
+router.post('/', [authenticate], function(req, res, next) {
   var errorMessage = validate(req.body);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   }
   else {
-      res.locals.connection.query("INSERT INTO orgs SET ?", req.body, function(error, results, fields) {
+      res.locals.connection.query("INSERT INTO requests SET ?", req.body, function(error, results, fields) {
       if (error) {
         res.status(500);
         res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -75,8 +77,8 @@ router.post('/', [authenticate, isAdmin], function(req, res, next) {
   }
 });
 
-router.delete('/:orgID', [authenticate, isAdminOrAdvisor], function(req, res, next) {
-  res.locals.connection.query("DELETE FROM tutors WHERE userID = ? AND orgID = ?", [req.params.majorID, req.params.courseNo], function(error, results, fields) {
+router.delete('/:studentID/:orgID/:subjectID/:reqDate', [authenticate], function(req, res, next) {
+  res.locals.connection.query("DELETE FROM requests WHERE studentID = ? and orgID = ? subjectID = ? and reqDate = ?", req.params.studentID, function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));

@@ -1,9 +1,10 @@
 var express = require('express');
+const { authenticate } = require('../controllers/auth');
 var router = express.Router();
 
-/* GET tutors listing. */
+
 router.get('/', function(req, res, next) {
-  res.locals.connection.query("SELECT * FROM orgs", function(error, results, fields) {
+  res.locals.connection.query("SELECT SELECT * FROM availableTimes", function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -18,8 +19,10 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.get('/:orgID', function(req, res, next) {
-  res.locals.connection.query("SELECT * FROM orgs WHERE orgID = ?", req.params.advisorID, function(error, results, fields) {
+// tutorID and start time should be good enough?
+// tutors should onlu have one time slot at a given time? empty org can be open for all not closed orgs
+router.get('/:tutorID/:startDateTime', function(req, res, next) {
+  res.locals.connection.query("SELECT * FROM availableTimes WHERE tutorID = ? and startDateTime = ?", req.params.studentID, function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -31,14 +34,14 @@ router.get('/:orgID', function(req, res, next) {
   });
 });
 
-router.put('/:orgID', [authenticate, isAdminOrSameAdvisor], function(req, res, next) {
+router.put('/:tutorID/:startDateTime', function(req, res, next) {
   var errorMessage = validate(req.body);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   }
   else {
-    res.locals.connection.query("UPDATE orgs SET ? WHERE orgID = ?", [req.body, req.params.advisorID], function(error, results, fields) {
+    res.locals.connection.query("UPDATE availableTimes WHERE tutorID = ? and startDateTime = ?", [req.body, req.params.studentID], function(error, results, fields) {
       if (error) {
         res.status(500);
         res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -53,14 +56,14 @@ router.put('/:orgID', [authenticate, isAdminOrSameAdvisor], function(req, res, n
   }
 });
 
-router.post('/', [authenticate, isAdmin], function(req, res, next) {
+router.post('/', [authenticate], function(req, res, next) {
   var errorMessage = validate(req.body);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   }
   else {
-      res.locals.connection.query("INSERT INTO orgs SET ?", req.body, function(error, results, fields) {
+      res.locals.connection.query("INSERT INTO availableTimes SET ?", req.body, function(error, results, fields) {
       if (error) {
         res.status(500);
         res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -75,8 +78,8 @@ router.post('/', [authenticate, isAdmin], function(req, res, next) {
   }
 });
 
-router.delete('/:orgID', [authenticate, isAdminOrAdvisor], function(req, res, next) {
-  res.locals.connection.query("DELETE FROM tutors WHERE userID = ? AND orgID = ?", [req.params.majorID, req.params.courseNo], function(error, results, fields) {
+router.delete('/:locationID', [authenticate], function(req, res, next) {
+  res.locals.connection.query("DELETE FROM availableTimes WHERE tutorID = ? and startDateTime = ?", req.params.studentID, function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
