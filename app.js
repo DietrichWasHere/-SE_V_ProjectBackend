@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var mysql = require('mysql');
+var dbconfig = require("./config/db.config");
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -22,6 +24,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+//Database connection
+app.use(function(req, res, next) {
+  res.locals.connection = mysql.createConnection(dbconfig);
+  res.locals.connection.connect();
+  next();
+});
+
+const corsOptions = {
+  origin: '*',
+  methods: ['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS']
+}
+app.use(cors(corsOptions));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
