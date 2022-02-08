@@ -1,8 +1,9 @@
 var express = require('express');
+const { authenticate, isAdmin, isAdminOrSupervisorWithOrg } = require('../controllers/auth');
 var router = express.Router();
 
 /* GET tutors listing. */
-router.get('/', function(req, res, next) {
+router.get('/', [authenticate, isAdmin], function(req, res, next) {
   res.locals.connection.query("SELECT * FROM orgs", function(error, results, fields) {
     if (error) {
       res.status(500);
@@ -18,7 +19,7 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.get('/:orgID', [authenticate, isAdminOrAdvisor], function(req, res, next) {
+router.get('/:orgID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
   res.locals.connection.query("SELECT * FROM orgs WHERE orgID = ?", req.params.advisorID, function(error, results, fields) {
     if (error) {
       res.status(500);
@@ -31,7 +32,7 @@ router.get('/:orgID', [authenticate, isAdminOrAdvisor], function(req, res, next)
   });
 });
 
-router.put('/:orgID', [authenticate, isAdminOrSameAdvisor], function(req, res, next) {
+router.put('/:orgID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
   var errorMessage = validate(req.body);
   if (errorMessage.length > 2) {
     res.status(406);
@@ -75,8 +76,8 @@ router.post('/', [authenticate, isAdmin], function(req, res, next) {
   }
 });
 
-router.delete('/:orgID', [authenticate, isAdminOrAdvisor], function(req, res, next) {
-  res.locals.connection.query("DELETE FROM tutors WHERE userID = ? AND orgID = ?", [req.params.majorID, req.params.courseNo], function(error, results, fields) {
+router.delete('/:orgID', [authenticate, isAdmin], function(req, res, next) {
+  res.locals.connection.query("DELETE FROM orgs WHERE orgID = ?", [req.params.majorID, req.params.courseNo], function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));

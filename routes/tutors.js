@@ -1,9 +1,10 @@
 var express = require('express');
+const { authenticate, isAdmin, isSameUser, isNewUser, isAdminOrSupervisorWithOrg } = require('../controllers/auth');
 var router = express.Router();
 
 /* GET tutors listing. */
-router.get('/', function(req, res, next) {
-  res.locals.connection.query("SELECT * FROM tutors", function(error, results, fields) {
+router.get('/:orgID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
+  res.locals.connection.query("SELECT * FROM tutors where orgID = ?", req.params.orgID, function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -18,8 +19,8 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.get('/:userID/:orgID', [authenticate, isAdminOrAdvisor], function(req, res, next) {
-  res.locals.connection.query("SELECT * FROM tutors WHERE userID = ? and  orgID = ?", req.params.advisorID, function(error, results, fields) {
+/*router.get('/:userID/:orgID', [authenticate, isAdminOrAdvisor], function(req, res, next) {
+  res.locals.connection.query("SELECT * FROM tutors WHERE userID = ? and orgID = ?", req.params.advisorID, function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -73,10 +74,10 @@ router.post('/', [authenticate, isAdmin], function(req, res, next) {
       res.locals.connection.end();
     });
   }
-});
+});*/
 
-router.delete('/:userID/:orgID', [authenticate, isAdminOrAdvisor], function(req, res, next) {
-  res.locals.connection.query("DELETE FROM major_courses WHERE userID = ? AND orgID = ?", [req.params.majorID, req.params.courseNo], function(error, results, fields) {
+router.delete('/:orgID/:userID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
+  res.locals.connection.query("DELETE FROM tutors WHERE userID = ? AND orgID = ?", [req.params.userID, req.params.orgID], function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
