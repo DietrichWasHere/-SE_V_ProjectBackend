@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mysql = require('mysql');
 var dbconfig = require("./config/db.config");
+var cors = require("cors");
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -58,6 +59,12 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+var port = '8081';
+var hostname = 'localhost';
+app.listen(port, hostname, function () {
+  console.log("The server is running at http://".concat(hostname, ":").concat(port));
 });
 
 module.exports = app;
