@@ -2,12 +2,12 @@ const {OAuth2Client} = require('google-auth-library');
 
 async function authenticate(req, res, next) {
 	if (req.get('authorization') == null || req.get('authorization') == '' || !req.get('authorization').startsWith('Bearer ')) {
-		req.user = {role: 'none'};
+		req.user = {roles: []};
 		return next();
 	}
 	token = JSON.parse(req.get('authorization').slice(7));
 	if (!token.token) {
-		req.user = {role: 'none'};
+		req.user = {roles: []};
 		return next();
 	}
 	const client = new OAuth2Client('263273650927-8hg4d3stccism1g1jq5372e0g03ni6du.apps.googleusercontent.com');
@@ -51,7 +51,7 @@ async function authenticate(req, res, next) {
 				});
 			}
 			else {
-				req.user = {};
+				req.user = {roles: []};
 			}
 		});
 	}
@@ -79,7 +79,7 @@ function isSameUser(req, res, next) {
 
 function isNewUser(req, res, next) {
 	if (req.user == {}) next();
-	else res.status(401).send({error:'User already exists'});
+	else res.status(400).send({error:'User already exists'});
 }
 
 module.exports = {authenticate, isAdmin, isAdminOrSupervisorWithOrg, isAdminOrTutorWithOrg, isSameUser, isNewUser};
