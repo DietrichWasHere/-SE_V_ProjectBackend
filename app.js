@@ -3,9 +3,16 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var mysql = require('mysql');
+var dbconfig = require("./config/db.config");
+var cors = require("cors");
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var tutorsRouter = require('./routes/tutors');
+var supervisorsRouter = require('./routes/supervisors');
+var orgsRouter = require('./routes/orgs');
+
 
 var app = express();
 
@@ -19,8 +26,24 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//Database connection
+app.use(function(req, res, next) {
+  res.locals.connection = mysql.createConnection(dbconfig);
+  res.locals.connection.connect();
+  next();
+});
+
+const corsOptions = {
+  origin: '*',
+  methods: ['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS']
+}
+app.use(cors(corsOptions));
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/tutors', tutorsRouter);
+app.use('/supervisors', supervisorsRouter);
+app.use('/orgs', orgsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -36,6 +59,12 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+var port = '8081';
+var hostname = 'localhost';
+app.listen(port, hostname, function () {
+  console.log("The server is running at http://".concat(hostname, ":").concat(port));
 });
 
 module.exports = app;

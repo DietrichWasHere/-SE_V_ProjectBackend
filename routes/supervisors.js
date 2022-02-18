@@ -1,10 +1,10 @@
 var express = require('express');
-const { authenticate, isAdmin, isSameUser, isNewUser } = require('../controllers/auth');
+const { authenticate, isAdminOrSupervisorWithOrg, isAdmin } = require('../controllers/auth');
 var router = express.Router();
 
-
-router.get('/', [authenticate, isAdmin], function(req, res, next) {
-  res.locals.connection.query("SELECT * FROM users", function(error, results, fields) {
+/* GET supervisors listing. */
+router.get('/:orgID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
+  res.locals.connection.query("SELECT * FROM supervisors where orgID = ?", req.params.orgID, function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -18,8 +18,9 @@ router.get('/', [authenticate, isAdmin], function(req, res, next) {
   });
 });
 
-router.get('/:userID', [authenticate, isSameUser], function(req, res, next) {
-  res.locals.connection.query("SELECT * FROM users WHERE userID = ?", req.params.studentID, function(error, results, fields) {
+
+/*router.get('/:userID/:orgID', [authenticate, isAdminOrAdvisor], function(req, res, next) {
+  res.locals.connection.query("SELECT * FROM supervisors WHERE userID = ? and  orgID = ?", req.params.advisorID, function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -31,14 +32,14 @@ router.get('/:userID', [authenticate, isSameUser], function(req, res, next) {
   });
 });
 
-router.put('/:userID', [authenticate, isSameUser], function(req, res, next) {
+router.put('/:userID/:orgID', [authenticate, isAdminOrSameAdvisor], function(req, res, next) {
   var errorMessage = validate(req.body);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   }
   else {
-    res.locals.connection.query("UPDATE users SET ? WHERE userID=?", [req.body, req.params.studentID], function(error, results, fields) {
+    res.locals.connection.query("UPDATE supervisors SET ? WHERE userID=? and orgID = ?", [req.body, req.params.advisorID], function(error, results, fields) {
       if (error) {
         res.status(500);
         res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -51,16 +52,16 @@ router.put('/:userID', [authenticate, isSameUser], function(req, res, next) {
       res.locals.connection.end();
     });
   }
-});
+});*/
 
-router.post('/', [authenticate, isNewUser], function(req, res, next) {
+router.post('/:orgID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
   var errorMessage = validate(req.body);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   }
   else {
-      res.locals.connection.query("INSERT INTO users SET ?", req.body, function(error, results, fields) {
+      res.locals.connection.query("INSERT INTO supervisors SET ?", req.body, function(error, results, fields) {
       if (error) {
         res.status(500);
         res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -75,8 +76,8 @@ router.post('/', [authenticate, isNewUser], function(req, res, next) {
   }
 });
 
-router.delete('/:userID', [authenticate, isAdmin], function(req, res, next) {
-  res.locals.connection.query("DELETE FROM users WHERE userID = ?", req.params.userID, function(error, results, fields) {
+router.delete('/:userID/:orgID', [authenticate, isAdmin], function(req, res, next) {
+  res.locals.connection.query("DELETE FROM supervisors WHERE userID = ? AND orgID = ?", [req.params.majorID, req.params.courseNo], function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
