@@ -5,18 +5,24 @@ async function authenticate(req, res, next) {
 		req.user = {roles: []};
 		return next();
 	}
-	token = JSON.parse(req.get('authorization').slice(7));
-	if (!token.token) {
+	try {
+		token = JSON.parse(req.get('authorization').slice(7));
+		if (!token.token) {
+			req.user = {roles: []};
+			return next();
+		}
+		const client = new OAuth2Client('263273650927-8hg4d3stccism1g1jq5372e0g03ni6du.apps.googleusercontent.com');
+		const ticket = await client.verifyIdToken({
+			idToken: token.token
+			//audience: '263273650927-8hg4d3stccism1g1jq5372e0g03ni6du.apps.googleusercontent.com'
+		});
+		const payload= ticket.getPayload();
+		console.log('Google payload is '+JSON.stringify(payload));
+	}
+	catch (e) {
 		req.user = {roles: []};
 		return next();
 	}
-	const client = new OAuth2Client('263273650927-8hg4d3stccism1g1jq5372e0g03ni6du.apps.googleusercontent.com');
-	const ticket = await client.verifyIdToken({
-		idToken: token.token
-		//audience: '263273650927-8hg4d3stccism1g1jq5372e0g03ni6du.apps.googleusercontent.com'
-	});
-	const payload= ticket.getPayload();
-	console.log('Google payload is '+JSON.stringify(payload));
 	let email = payload['email'];
 	const admins = ['timothyaaronwhite@gmail.com','awesomenerd.dv@gmail.com','braden.thompson18@gmail.com','eddie52gomez@gmail.com'];
 	if (admins.includes(email)) {
