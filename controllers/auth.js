@@ -67,9 +67,9 @@ function isAdminOrSupervisorWithOrg(req, res, next) {
 	else res.status(401).send({error:'Insufficient permissions'});
 }
 
-function isAdminOrTutorWithOrg(req, res, next) {
-	//if (req.user.role == 'admin' || req.user.role == 'advisor' || (req.user.role == 'student' && req.params.studentID == req.user.id)) next();
-	//else res.status(401).send({error:'Insufficient permissions'});
+function isTutorWithOrg(req, res, next) {
+	if (req.user.roles.includes({role: 'tutor', org: req.params.orgID})) next();
+	else res.status(401).send({error:'Insufficient permissions'});
 }
 
 function isSameUser(req, res, next) {
@@ -82,4 +82,4 @@ function isNewUser(req, res, next) {
 	else res.status(400).send({error:'User already exists'});
 }
 
-module.exports = {authenticate, isAdmin, isAdminOrSupervisorWithOrg, isAdminOrTutorWithOrg, isSameUser, isNewUser};
+module.exports = {authenticate, isAdmin, isAdminOrSupervisorWithOrg, isTutorWithOrg, isSameUser, isNewUser};
