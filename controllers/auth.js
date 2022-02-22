@@ -18,48 +18,48 @@ async function authenticate(req, res, next) {
 		});
 		const payload= ticket.getPayload();
 		console.log('Google payload is '+JSON.stringify(payload));
+		let email = payload['email'];
+		const admins = ['timothyaaronwhite@gmail.com','awesomenerd.dv@gmail.com','braden.thompson18@gmail.com','eddie52gomez@gmail.com'];
+		if (admins.includes(email)) {
+			req.user = {roles: 'admin'};
+			next();
+		}
+		else {
+			res.locals.connection.query("SELECT * FROM users WHERE email = ?", email, function(error, results, fields) {
+				if (!error && results.length) {
+					req.user = {id: results[0].userID, roles: []};
+					res.locals.connection.query("SELECT * FROM supervisors WHERE userID = ?", results[0].userID, function(error, results, fields) {
+						if (!error && results.length) {
+							for (i in results) {
+								req.user.roles.insert({role: 'supervisor', org: results[i].orgID});
+							}
+						}
+						res.locals.connection.query("SELECT * FROM tutors WHERE userID = ?", results[0].userID, function(error, results, fields) {
+							if (!error && results.length) {
+								for (i in results) {
+									req.user.roles.insert({role: 'tutor', org: results[i].orgID});
+								}
+							}
+							res.locals.connection.query("SELECT * FROM students WHERE userID = ?", results[0].userID, function(error, results, fields) {
+								if (!error && results.length) {
+									for (i in results) {
+										req.user.roles.insert({role: 'student', org: results[i].orgID});
+									}
+								}
+								next();
+							});
+						});
+					});
+				}
+				else {
+					req.user = {roles: []};
+				}
+			});
+		}
 	}
 	catch (e) {
 		req.user = {roles: []};
 		return next();
-	}
-	let email = payload['email'];
-	const admins = ['timothyaaronwhite@gmail.com','awesomenerd.dv@gmail.com','braden.thompson18@gmail.com','eddie52gomez@gmail.com'];
-	if (admins.includes(email)) {
-		req.user = {roles: 'admin'};
-		next();
-	}
-	else {
-		res.locals.connection.query("SELECT * FROM users WHERE email = ?", email, function(error, results, fields) {
-			if (!error && results.length) {
-				req.user = {id: results[0].userID, roles: []};
-				res.locals.connection.query("SELECT * FROM supervisors WHERE userID = ?", results[0].userID, function(error, results, fields) {
-					if (!error && results.length) {
-						for (i in results) {
-							req.user.roles.insert({role: 'supervisor', org: results[i].orgID});
-						}
-					}
-					res.locals.connection.query("SELECT * FROM tutors WHERE userID = ?", results[0].userID, function(error, results, fields) {
-						if (!error && results.length) {
-							for (i in results) {
-								req.user.roles.insert({role: 'tutor', org: results[i].orgID});
-							}
-						}
-						res.locals.connection.query("SELECT * FROM students WHERE userID = ?", results[0].userID, function(error, results, fields) {
-							if (!error && results.length) {
-								for (i in results) {
-									req.user.roles.insert({role: 'student', org: results[i].orgID});
-								}
-							}
-							next();
-						});
-					});
-				});
-			}
-			else {
-				req.user = {roles: []};
-			}
-		});
 	}
 }
 
