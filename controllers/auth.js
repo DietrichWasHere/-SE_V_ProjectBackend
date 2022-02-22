@@ -32,19 +32,19 @@ async function authenticate(req, res, next) {
 					res.locals.connection.query("SELECT * FROM supervisors WHERE userID = ?", userID, function(error, results, fields) {
 						if (!error && results.length) {
 							for (i in results) {
-								req.user.roles.insert({role: 'supervisor', org: results[i].orgID});
+								req.user.roles.push({role: 'supervisor', org: results[i].orgID});
 							}
 						}
 						res.locals.connection.query("SELECT * FROM tutors WHERE userID = ?", userID, function(error, results, fields) {
 							if (!error && results.length) {
 								for (i in results) {
-									req.user.roles.insert({role: 'tutor', org: results[i].orgID});
+									req.user.roles.push({role: 'tutor', org: results[i].orgID});
 								}
 							}
 							res.locals.connection.query("SELECT * FROM students WHERE userID = ?", userID, function(error, results, fields) {
 								if (!error && results.length) {
 									for (i in results) {
-										req.user.roles.insert({role: 'student', org: results[i].orgID});
+										req.user.roles.push({role: 'student', org: results[i].orgID});
 									}
 								}
 								next();
