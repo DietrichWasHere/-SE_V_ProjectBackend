@@ -2,6 +2,22 @@ var express = require('express');
 const { authenticate, isAdmin, isSameUser, isNewUser, isTutorWithOrg } = require('../controllers/auth');
 var router = express.Router();
 
+function validate(course) {
+	var errorMessage = "[";
+	if (course.startDateTime == null || course.startDateTime.length == 0) {
+	  if (errorMessage.length > 1) errorMessage += ",";
+	  errorMessage +=
+		'{"attributeName":"startDateTime", "message":"Must have start time"}';
+	}
+	if (course.endDateTime == null || course.endDateTime.length == 0) {
+	  if (errorMessage.length > 1) errorMessage += ",";
+	  errorMessage +=
+		'{"attributeName":"endDateTime", "message":"Must have end time"}';
+	}
+	errorMessage += "]";
+	return errorMessage;
+  }
+
 router.get('/', [authenticate], function(req, res, next) {
   res.locals.connection.query("SELECT a.*, t.fName as tutorFName, t.lName as tutorLName, s.fName as studentFName, s.lName as studentLName, l.locationName FROM appointments a, users t, users s, locations l where (a.tutorID = ? OR a.studentID = ?) and a.tutorID = t.userID and a.studentID = s.userID and a.locationID = l.locationID", [req.user.id, req.user.id], function(error, results, fields) {
     if (error) {
