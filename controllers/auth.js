@@ -70,17 +70,17 @@ function isAdmin(req, res, next) {
 }
 
 function isAdminOrSupervisorWithOrg(req, res, next) {
-	if (req.user.roles == 'admin' || req.user.roles.includes({role: 'supervisor', org: req.params.orgID})) next();
+	if (req.user.roles == 'admin' || req.user.roles.includes({role: 'supervisor', org: req.params.orgID}) || req.user.roles.includes({role: 'supervisor', org: req.body.orgID})) next();
 	else res.status(401).send({error:'Insufficient permissions'});
 }
 
 function isTutorWithOrg(req, res, next) {
-	if (req.user.roles.includes({role: 'tutor', org: req.params.orgID})) next();
+	if (req.user.roles.includes({role: 'tutor', org: req.params.orgID}) || req.user.roles.includes({role: 'tutor', org: req.body.orgID})) next();
 	else res.status(401).send({error:'Insufficient permissions'});
 }
 
 function isSameUser(req, res, next) {
-	if (req.params.userID == req.user.id) next();
+	if (req.params.userID == req.user.id || req.body.userID == req.user.id) next();
 	else res.status(401).send({error:'Insufficient permissions'});
 }
 
