@@ -8,6 +8,7 @@ var dbconfig = require("./config/db.config");
 var cors = require("cors");
 
 var indexRouter = require('./routes/index');
+var userRouter = require('./routes/user');
 var usersRouter = require('./routes/users');
 var tutorsRouter = require('./routes/tutors');
 var supervisorsRouter = require('./routes/supervisors');
@@ -40,6 +41,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use('/', indexRouter);
+app.use('/user', userRouter);
 app.use('/users', usersRouter);
 app.use('/tutors', tutorsRouter);
 app.use('/supervisors', supervisorsRouter);
