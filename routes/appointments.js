@@ -18,8 +18,8 @@ function validate(course) {
 	return errorMessage;
   }
 
-router.get('/', [authenticate, isTutorWithOrg], function(req, res, next) {
-  res.locals.connection.query("SELECT a.*, t.fName as tutorFName, t.lName as tutorLName, s.fName as studentFName, s.lName as studentLName, l.locationName FROM appointments a, users t, users s, locations l where (a.tutorID = ? and a.orgID = ?) and a.tutorID = t.userID and a.studentID = s.userID and a.locationID = l.locationID", [req.user.id, req.body.orgID], function(error, results, fields) {
+router.get('/:orgID', [authenticate, isTutorWithOrg], function(req, res, next) {
+  res.locals.connection.query("SELECT a.*, t.fName as tutorFName, t.lName as tutorLName, s.fName as studentFName, s.lName as studentLName, l.locationName FROM appointments a, users t, users s, locations l where (a.tutorID = ? and a.orgID = ?) and a.tutorID = t.userID and a.studentID = s.userID and a.locationID = l.locationID", [req.user.id, req.params.orgID], function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -33,8 +33,8 @@ router.get('/', [authenticate, isTutorWithOrg], function(req, res, next) {
   });
 });
 
-router.get('/', [authenticate], function(req, res, next) {
-	res.locals.connection.query("SELECT a.*, t.fName as tutorFName, t.lName as tutorLName, s.fName as studentFName, s.lName as studentLName, l.locationName FROM appointments a, users t, users s, locations l where (a.orgID = ?) and a.tutorID = t.userID and a.studentID = s.userID and a.locationID = l.locationID", [req.body.orgID], function(error, results, fields) {
+router.get('/:orgID', [authenticate], function(req, res, next) {
+	res.locals.connection.query("SELECT a.*, t.fName as tutorFName, t.lName as tutorLName, s.fName as studentFName, s.lName as studentLName, l.locationName FROM appointments a, users t, users s, locations l where (a.orgID = ?) and a.tutorID = t.userID and a.studentID = s.userID and a.locationID = l.locationID", [req.params.orgID], function(error, results, fields) {
 	  if (error) {
 		res.status(500);
 		res.send(JSON.stringify({ status: 500, error: error, response: null }));
