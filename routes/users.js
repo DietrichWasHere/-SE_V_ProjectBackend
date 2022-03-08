@@ -36,7 +36,7 @@ router.get('/', [authenticate, isAdmin], function(req, res, next) {
 });
 
 router.get('/:userID', [authenticate, isSameUser], function(req, res, next) {
-  res.locals.connection.query("SELECT * FROM users WHERE userID = ?", req.params.studentID, function(error, results, fields) {
+  res.locals.connection.query("SELECT * FROM users WHERE userID = ?", req.params.userID, function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -55,7 +55,7 @@ router.put('/:userID', [authenticate, isSameUser], function(req, res, next) {
     res.send(errorMessage);
   }
   else {
-    res.locals.connection.query("UPDATE users SET ? WHERE userID=?", [req.body, req.params.studentID], function(error, results, fields) {
+    res.locals.connection.query("UPDATE users SET ? WHERE userID=?", [req.body, req.params.userID], function(error, results, fields) {
       if (error) {
         res.status(500);
         res.send(JSON.stringify({ status: 500, error: error, response: null }));
