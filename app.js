@@ -8,11 +8,12 @@ var dbconfig = require("./config/db.config");
 var cors = require("cors");
 
 var indexRouter = require('./routes/index');
+var userRouter = require('./routes/user');
 var usersRouter = require('./routes/users');
 var tutorsRouter = require('./routes/tutors');
 var supervisorsRouter = require('./routes/supervisors');
 var orgsRouter = require('./routes/orgs');
-
+var appointmentsRouter = require('./routes/appointments');
 
 var app = express();
 
@@ -40,10 +41,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use('/', indexRouter);
+app.use('/user', userRouter);
 app.use('/users', usersRouter);
 app.use('/tutors', tutorsRouter);
 app.use('/supervisors', supervisorsRouter);
 app.use('/orgs', orgsRouter);
+app.use('/appointments', appointmentsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

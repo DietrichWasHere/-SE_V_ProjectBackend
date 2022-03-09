@@ -2,6 +2,12 @@ var express = require('express');
 const { authenticate, isAdminOrSupervisorWithOrg, isAdmin } = require('../controllers/auth');
 var router = express.Router();
 
+function validate(course) {
+  var errorMessage = "[";
+  errorMessage += "]";
+  return errorMessage;
+}
+
 /* GET supervisors listing. */
 router.get('/:orgID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
   res.locals.connection.query("SELECT * FROM supervisors where orgID = ?", req.params.orgID, function(error, results, fields) {

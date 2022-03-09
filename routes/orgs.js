@@ -2,6 +2,16 @@ var express = require('express');
 const { authenticate, isAdmin, isAdminOrSupervisorWithOrg } = require('../controllers/auth');
 var router = express.Router();
 
+function validate(course) {
+  var errorMessage = "[";
+  if (course.orgName == null || course.orgName.length == 0) {
+    if (errorMessage.length > 1) errorMessage += ",";
+    errorMessage += '{"attributeName":"orgName" , "message":"Must have name"}';
+  }
+  errorMessage += "]";
+  return errorMessage;
+}
+
 /* GET tutors listing. */
 router.get('/', [authenticate, isAdmin], function(req, res, next) {
   res.locals.connection.query("SELECT * FROM orgs", function(error, results, fields) {
