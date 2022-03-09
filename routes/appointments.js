@@ -19,7 +19,7 @@ function validate(course) {
   }
 
 router.get('/:orgID', [authenticate, isTutorWithOrg], function(req, res, next) {
-  res.locals.connection.query("SELECT a.*, t.fName as tutorFName, t.lName as tutorLName, s.fName as studentFName, s.lName as studentLName, l.locationName FROM appointments a, users t, locations l where (a.tutorID = ? and a.orgID = ?) and a.tutorID = t.userID and a.locationID = l.locationID left join users s on a.studentID = s.userID", [req.user.id, req.params.orgID], function(error, results, fields) {
+  res.locals.connection.query("SELECT a.*, t.fName as tutorFName, t.lName as tutorLName, s.fName as studentFName, s.lName as studentLName, l.locationName FROM appointments a inner join users t on a.tutorID = t.userID left join locations l on a.locationID = l.locationID left join users s on a.studentID = s.userID where a.tutorID = ? and a.orgID = ?", [req.user.id, req.params.orgID], function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -34,7 +34,7 @@ router.get('/:orgID', [authenticate, isTutorWithOrg], function(req, res, next) {
 });
 
 router.get('/:orgID', [authenticate], function(req, res, next) {
-	res.locals.connection.query("SELECT a.*, t.fName as tutorFName, t.lName as tutorLName, s.fName as studentFName, s.lName as studentLName, l.locationName FROM appointments a, users t, locations l where (a.orgID = ?) and a.tutorID = t.userID and a.locationID = l.locationID left join users s on a.studentID = s.userID", [req.params.orgID], function(error, results, fields) {
+	res.locals.connection.query("SELECT a.*, t.fName as tutorFName, t.lName as tutorLName, s.fName as studentFName, s.lName as studentLName, l.locationName FROM appointments a inner join users t on a.tutorID = t.userID left join locations l on a.locationID = l.locationID left join users s on a.studentID = s.userID where a.orgID = ?", [req.params.orgID], function(error, results, fields) {
 	  if (error) {
 		res.status(500);
 		res.send(JSON.stringify({ status: 500, error: error, response: null }));
