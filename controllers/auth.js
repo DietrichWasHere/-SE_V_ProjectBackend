@@ -53,7 +53,7 @@ async function authenticate(req, res, next) {
 					});
 				}
 				else {
-					req.user = {user_info: {fname: payload.given_name, lName: payload.family_name, email: payload.email}, roles: []};
+					req.user = {user_info: {fname: payload.given_name, lName: payload.family_name, email: payload.email, picture: payload.picture}, roles: []};
 				}
 			});
 		}
