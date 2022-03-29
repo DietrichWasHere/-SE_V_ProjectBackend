@@ -70,7 +70,7 @@ router.post('/', [authenticate, isTutorWithOrg], function(req, res, next) {
 	}
 });
 
-router.get('/:appointmentID', [authenticate], function(req, res, next) {
+router.get('/:orgID/:appointmentID', [authenticate], function(req, res, next) {
   res.locals.connection.query("SELECT * FROM appointments WHERE appointmentID = ?", req.params.appointmentID, function(error, results, fields) {
     if (error) {
       res.status(500);
