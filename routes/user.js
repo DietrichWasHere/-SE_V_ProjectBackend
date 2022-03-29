@@ -4,6 +4,24 @@ var express = require('express');
 const { authenticate, isNewUser } = require('../controllers/auth');
 var router = express.Router();
 
+function validate(user) {
+	var errorMessage = "[";
+	if (user.fName == null || user.fName.length == 0) {
+	  if (errorMessage.length > 1) errorMessage += ",";
+	  errorMessage += '{"attributeName":"fName", "message":"Must have fName"}';
+	}
+	if (user.lName == null || user.lName.length == 0) {
+	  if (errorMessage.length > 1) errorMessage += ",";
+	  errorMessage += '{"attributeName":"lName", "message":"Must have lName"}';
+	}
+	if (user.email == null || user.email.length == 0) {
+	  if (errorMessage.length > 1) errorMessage += ",";
+	  errorMessage += '{"attributeName":"email", "message":"Must have email"}';
+	}
+	errorMessage += "]";
+	return errorMessage;
+  }
+
 router.get('/', [authenticate], function(req, res, next) {
 	res.send({user: req.user});
 })
@@ -30,7 +48,7 @@ router.put('/', [authenticate], function(req, res, next) {
 	  res.send(errorMessage);
 	}
 	else {
-	  res.locals.connection.query("UPDATE users SET ? WHERE userID=?", [req.body, requser.id], function(error, results, fields) {
+	  res.locals.connection.query("UPDATE users SET ? WHERE userID=?", [req.body, req.user.id], function(error, results, fields) {
 		if (error) {
 		  res.status(500);
 		  res.send(JSON.stringify({ status: 500, error: error, response: null }));
