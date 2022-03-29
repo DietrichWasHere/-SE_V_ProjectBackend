@@ -54,6 +54,7 @@ async function authenticate(req, res, next) {
 				}
 				else {
 					req.user = {user_info: {fname: payload.given_name, lName: payload.family_name, email: payload.email, picture: payload.picture}, roles: []};
+					return next();
 				}
 			});
 		}
@@ -85,7 +86,7 @@ function isSameUser(req, res, next) {
 }
 
 function isNewUser(req, res, next) {
-	if (req.user.roles == []) next();
+	if (!req.user.roles.length) next();
 	else res.status(400).send({error:'User already exists'});
 }
 

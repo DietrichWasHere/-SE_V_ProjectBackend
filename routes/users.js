@@ -1,18 +1,20 @@
+// all users
+
 var express = require('express');
 const { authenticate, isAdmin, isSameUser, isNewUser } = require('../controllers/auth');
 var router = express.Router();
 
-function validate(course) {
+function validate(user) {
   var errorMessage = "[";
-  if (course.fName == null || course.fName.length == 0) {
+  if (user.fName == null || user.fName.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
     errorMessage += '{"attributeName":"fName", "message":"Must have fName"}';
   }
-  if (course.lName == null || course.lName.length == 0) {
+  if (user.lName == null || user.lName.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
     errorMessage += '{"attributeName":"lName", "message":"Must have lName"}';
   }
-  if (course.email == null || course.email.length == 0) {
+  if (user.email == null || user.email.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
     errorMessage += '{"attributeName":"email", "message":"Must have email"}';
   }

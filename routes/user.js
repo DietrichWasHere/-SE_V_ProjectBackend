@@ -1,3 +1,5 @@
+// current user
+
 var express = require('express');
 const { authenticate, isNewUser } = require('../controllers/auth');
 var router = express.Router();
