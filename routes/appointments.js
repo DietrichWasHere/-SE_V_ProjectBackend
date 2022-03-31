@@ -1,5 +1,5 @@
 var express = require('express');
-const { authenticate, isAdmin, isSameUser, isNewUser, isTutorWithOrg } = require('../controllers/auth');
+const { authenticate, isAdmin, isSameUser, isNewUser, isTutorWithOrg, isTutor } = require('../controllers/auth');
 var router = express.Router();
 
 function validate(course) {
@@ -105,8 +105,20 @@ router.put('/:appointmentID', [authenticate], function(req, res, next) {
   }
 });
 
+router.get('/requests', [authenticate, isTutor], function(req, res, next) {
+  res.locals.connection.query("SELECT * FROM apptrequests r, appointments a WHERE a.appointmentID = r.appointmentID and a.tutorID = ?", req.user.id, function(error, results, fields) {
+    if (error) {
+      res.status(500);
+      res.send(JSON.stringify({ status: 500, error: error, response: null }));
+    } else {
+      res.status(200);
+      res.send(JSON.stringify(results));
+    }
+    res.locals.connection.end();
+  });
+});
 
-router.post('/request', [authenticate], function(req, res, next) {
+router.post('/requests', [authenticate], function(req, res, next) {
 	var errorMessage = validate(req.body);
 	if (errorMessage.length > 2) {
 	  res.status(406);
