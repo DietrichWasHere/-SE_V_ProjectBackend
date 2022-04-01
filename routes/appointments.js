@@ -119,12 +119,6 @@ router.get('/requests', [authenticate, isTutor], function(req, res, next) {
 });
 
 router.post('/requests', [authenticate], function(req, res, next) {
-	var errorMessage = validate(req.body);
-	if (errorMessage.length > 2) {
-	  res.status(406);
-	  res.send(errorMessage);
-	}
-	else {
 		res.locals.connection.query("INSERT INTO apptrequests SET ?", [req.body], function(error, results, fields) {
 			if (error) {
 				res.status(500);
@@ -137,16 +131,9 @@ router.post('/requests', [authenticate], function(req, res, next) {
 			}
 			res.locals.connection.end();
 		});
-	}
 });
 
 router.put('/requests/:studentID/:appointmentID', [authenticate], function(req, res, next) {
-	var errorMessage = validate(req.body);
-	if (errorMessage.length > 2) {
-	  res.status(406);
-	  res.send(errorMessage);
-	}
-	else {
 		res.locals.connection.query("UPDATE apptrequests SET ? WHERE studentID = ? and appointmentID = ?", [req.body, req.params.studentID, req.params.appointmentID], function(error, results, fields) {
 			if (error) {
 				res.status(500);
@@ -159,7 +146,6 @@ router.put('/requests/:studentID/:appointmentID', [authenticate], function(req, 
 			}
 			res.locals.connection.end();
 		});
-	}
 });
 
 /*router.delete('/:orgID/:userID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
