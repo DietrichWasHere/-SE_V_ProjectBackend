@@ -85,3 +85,5 @@ router.post('/', [authenticate, isTutor], function(req, res, next) {
 	  res.locals.connection.end();
 	});
   });
+
+  module.exports = router;
