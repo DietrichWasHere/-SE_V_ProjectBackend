@@ -1,5 +1,5 @@
 var express = require('express');
-const { authenticate, isAdmin, isSameUser, isNewUser, isTutorWithOrg } = require('../controllers/auth');
+const { authenticate, isAdmin, isSameUser, isNewUser, isTutorWithOrg, isTutor } = require('../controllers/auth');
 var router = express.Router();
 
 function validate(course) {
@@ -70,8 +70,8 @@ router.post('/', [authenticate, isTutorWithOrg], function(req, res, next) {
 	}
 });
 
-/*router.get('/:userID/:orgID', [authenticate, isAdminOrAdvisor], function(req, res, next) {
-  res.locals.connection.query("SELECT * FROM tutors WHERE userID = ? and orgID = ?", req.params.advisorID, function(error, results, fields) {
+router.get('/:orgID/:appointmentID', [authenticate], function(req, res, next) {
+  res.locals.connection.query("SELECT * FROM appointments WHERE appointmentID = ?", req.params.appointmentID, function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -83,14 +83,14 @@ router.post('/', [authenticate, isTutorWithOrg], function(req, res, next) {
   });
 });
 
-router.put('/:userID/:orgID', [authenticate, isAdminOrSameAdvisor], function(req, res, next) {
+router.put('/:appointmentID', [authenticate], function(req, res, next) {
   var errorMessage = validate(req.body);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   }
   else {
-    res.locals.connection.query("UPDATE tutors SET ? WHERE userID=? and orgID = ?", [req.body, req.params.advisorID], function(error, results, fields) {
+    res.locals.connection.query("UPDATE appointments SET ? WHERE appointmentID = ?", [req.body, req.params.appointmentID], function(error, results, fields) {
       if (error) {
         res.status(500);
         res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -105,8 +105,50 @@ router.put('/:userID/:orgID', [authenticate, isAdminOrSameAdvisor], function(req
   }
 });
 
+router.get('/requests', [authenticate, isTutor], function(req, res, next) {
+  res.locals.connection.query("SELECT * FROM apptrequests r, appointments a WHERE a.appointmentID = r.appointmentID and a.tutorID = ?", req.user.id, function(error, results, fields) {
+    if (error) {
+      res.status(500);
+      res.send(JSON.stringify({ status: 500, error: error, response: null }));
+    } else {
+      res.status(200);
+      res.send(JSON.stringify(results));
+    }
+    res.locals.connection.end();
+  });
+});
 
-router.delete('/:orgID/:userID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
+router.post('/requests', [authenticate], function(req, res, next) {
+		res.locals.connection.query("INSERT INTO apptrequests SET ?", [req.body], function(error, results, fields) {
+			if (error) {
+				res.status(500);
+				res.send(JSON.stringify({ status: 500, error: error, response: null }));
+				//If there is error, we send the error in the error section with 500 status
+			} else {
+				res.status(201);
+				res.send(JSON.stringify(results));
+				//If there is no error, all is good and response is 200OK.
+			}
+			res.locals.connection.end();
+		});
+});
+
+router.put('/requests/:studentID/:appointmentID', [authenticate], function(req, res, next) {
+		res.locals.connection.query("UPDATE apptrequests SET ? WHERE studentID = ? and appointmentID = ?", [req.body, req.params.studentID, req.params.appointmentID], function(error, results, fields) {
+			if (error) {
+				res.status(500);
+				res.send(JSON.stringify({ status: 500, error: error, response: null }));
+				//If there is error, we send the error in the error section with 500 status
+			} else {
+				res.status(201);
+				res.send(JSON.stringify(results));
+				//If there is no error, all is good and response is 200OK.
+			}
+			res.locals.connection.end();
+		});
+});
+
+/*router.delete('/:orgID/:userID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
   res.locals.connection.query("DELETE FROM tutors WHERE userID = ? AND orgID = ?", [req.params.userID, req.params.orgID], function(error, results, fields) {
     if (error) {
       res.status(500);
