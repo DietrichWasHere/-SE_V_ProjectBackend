@@ -3,7 +3,7 @@ const { authenticate, isTutor } = require('../controllers/auth');
 var router = express.Router();
 
 router.get('/', [authenticate, isTutor], function(req, res, next) {
-	res.locals.connection.query("SELECT * FROM apptrequests r, appointments a WHERE a.appointmentID = r.appointmentID and a.tutorID = ?", req.user.id, function(error, results, fields) {
+	res.locals.connection.query("SELECT r.*, a.startDateTime, a.endDateTime FROM apptrequests r, appointments a WHERE a.appointmentID = r.appointmentID and a.tutorID = ?", req.user.id, function(error, results, fields) {
 	  if (error) {
 		res.status(500);
 		res.send(JSON.stringify({ status: 500, error: error, response: null }));
