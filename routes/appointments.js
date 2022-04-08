@@ -1,5 +1,5 @@
 var express = require('express');
-const { authenticate, isAdmin, isSameUser, isNewUser, isTutorWithOrg } = require('../controllers/auth');
+const { authenticate, isAdmin, isSameUser, isNewUser, isTutorWithOrg, isTutor } = require('../controllers/auth');
 var router = express.Router();
 
 function validate(course) {
@@ -34,7 +34,7 @@ function validate(course) {
 });*/
 
 router.get('/:orgID', [authenticate], function(req, res, next) {
-	res.locals.connection.query("SELECT a.*, t.fName as tutorFName, t.lName as tutorLName, s.fName as studentFName, s.lName as studentLName, l.locationName FROM appointments a inner join users t on a.tutorID = t.userID left join locations l on a.locationID = l.locationID left join users s on a.studentID = s.userID where a.orgID = ?", [req.params.orgID], function(error, results, fields) {
+	res.locals.connection.query("SELECT a.*, t.fName as tutorFName, t.lName as tutorLName, t.email as tutorEmail, s.fName as studentFName, s.lName as studentLName, l.locationName FROM appointments a inner join users t on a.tutorID = t.userID left join locations l on a.locationID = l.locationID left join users s on a.studentID = s.userID where a.orgID = ?", [req.params.orgID], function(error, results, fields) {
 	  if (error) {
 		res.status(500);
 		res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -70,8 +70,8 @@ router.post('/', [authenticate, isTutorWithOrg], function(req, res, next) {
 	}
 });
 
-/*router.get('/:userID/:orgID', [authenticate, isAdminOrAdvisor], function(req, res, next) {
-  res.locals.connection.query("SELECT * FROM tutors WHERE userID = ? and orgID = ?", req.params.advisorID, function(error, results, fields) {
+router.get('/:orgID/:appointmentID', [authenticate], function(req, res, next) {
+  res.locals.connection.query("SELECT * FROM appointments WHERE appointmentID = ?", req.params.appointmentID, function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -83,14 +83,14 @@ router.post('/', [authenticate, isTutorWithOrg], function(req, res, next) {
   });
 });
 
-router.put('/:userID/:orgID', [authenticate, isAdminOrSameAdvisor], function(req, res, next) {
+router.put('/:appointmentID', [authenticate], function(req, res, next) {
   var errorMessage = validate(req.body);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   }
   else {
-    res.locals.connection.query("UPDATE tutors SET ? WHERE userID=? and orgID = ?", [req.body, req.params.advisorID], function(error, results, fields) {
+    res.locals.connection.query("UPDATE appointments SET ? WHERE appointmentID = ?", [req.body, req.params.appointmentID], function(error, results, fields) {
       if (error) {
         res.status(500);
         res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -105,8 +105,7 @@ router.put('/:userID/:orgID', [authenticate, isAdminOrSameAdvisor], function(req
   }
 });
 
-
-router.delete('/:orgID/:userID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
+/*router.delete('/:orgID/:userID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
   res.locals.connection.query("DELETE FROM tutors WHERE userID = ? AND orgID = ?", [req.params.userID, req.params.orgID], function(error, results, fields) {
     if (error) {
       res.status(500);
