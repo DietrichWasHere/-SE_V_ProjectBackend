@@ -16,6 +16,7 @@ var orgsRouter = require('./routes/orgs');
 var appointmentsRouter = require('./routes/appointments');
 var apptrequestsRouter = require('./routes/apptrequests');
 var subjectsRouter = require('./routes/subjects');
+var emailRouter = require('./routes/email');
 
 var app = express();
 
@@ -51,6 +52,7 @@ app.use('/orgs', orgsRouter);
 app.use('/appointments/requests', apptrequestsRouter);
 app.use('/appointments', appointmentsRouter);
 app.use('/subjects', subjectsRouter);
+app.use('/email', emailRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
