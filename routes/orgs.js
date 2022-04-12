@@ -1,5 +1,5 @@
 var express = require('express');
-const { authenticate, isAdmin, isAdminOrSupervisorWithOrg } = require('../controllers/auth');
+const { authenticate, isAdmin, isAdminOrSupervisorWithOrg, isInOrg } = require('../controllers/auth');
 var router = express.Router();
 
 function validate(course) {
@@ -29,7 +29,7 @@ router.get('/', [authenticate, isAdmin], function(req, res, next) {
 });
 
 
-router.get('/:orgID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
+router.get('/:orgID', [authenticate, isInOrg], function(req, res, next) {
   res.locals.connection.query("SELECT * FROM orgs WHERE orgID = ?", req.params.orgID, function(error, results, fields) {
     if (error) {
       res.status(500);
