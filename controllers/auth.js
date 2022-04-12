@@ -95,4 +95,9 @@ function isNewUser(req, res, next) {
 	else res.status(400).send({error:'User already exists'});
 }
 
-module.exports = {authenticate, isAdmin, isAdminOrSupervisorWithOrg, isTutorWithOrg, isTutor, isSameUser, isNewUser};
+function isInOrg(req, res, next) {
+	if (req.user.roles.some((e) => e.org == req.params.orgID) || req.user.roles.some((e) => e.org == req.body.orgID)) next();
+	else res.status(401).send({error:'Insufficient permissions'});
+}
+
+module.exports = {authenticate, isAdmin, isAdminOrSupervisorWithOrg, isTutorWithOrg, isTutor, isSameUser, isNewUser, isInOrg};
