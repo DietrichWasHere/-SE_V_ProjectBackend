@@ -34,7 +34,7 @@ router.post('/:orgID', [authenticate, isNewUser], function(req, res, next) {
 			//If there is error, we send the error in the error section with 500 status
 		} else {
 			console.log(results, results.insertId, req.params.orgID);
-			res.locals.connection.query("INSERT INTO students (studentID, orgID) VALUES (?, ?)", [results.insertId, req.params.orgID], function(error, results, fields) {
+			res.locals.connection.query("INSERT INTO students (userID, orgID) VALUES (?, ?)", [results.insertId, req.params.orgID], function(error, results, fields) {
 				if (error) {
 					res.status(500);
 					res.send(JSON.stringify({ status: 500, error: error, response: null }));
