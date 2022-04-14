@@ -55,12 +55,12 @@ router.put('/:userID/:orgID', [authenticate, isAdminOrSameAdvisor], function(req
 });*/
 
 router.post('/', [authenticate, isSameUser], function(req, res, next) {
-  var errorMessage = validate(req.body);
+  /*var errorMessage = validate(req.body);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   }
-  else {
+  else {*/
       res.locals.connection.query("INSERT INTO tutors SET ?", req.body, function(error, results, fields) {
       if (error) {
         res.status(500);
@@ -73,7 +73,7 @@ router.post('/', [authenticate, isSameUser], function(req, res, next) {
       }
       res.locals.connection.end();
     });
-  }
+  //}
 });
 
 router.delete('/:orgID/:userID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
