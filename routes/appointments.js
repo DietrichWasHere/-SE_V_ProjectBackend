@@ -34,7 +34,7 @@ function validate(course) {
 });*/
 
 router.get('/:orgID', [authenticate], function(req, res, next) {
-	res.locals.connection.query("SELECT a.*, t.fName as tutorFName, t.lName as tutorLName, t.email as tutorEmail, s.fName as studentFName, s.lName as studentLName, l.locationName FROM appointments a inner join users t on a.tutorID = t.userID left join locations l on a.locationID = l.locationID left join users s on a.studentID = s.userID where a.orgID = ?", [req.params.orgID], function(error, results, fields) {
+	res.locals.connection.query("SELECT a.*, t.fName as tutorFName, t.lName as tutorLName, t.email as tutorEmail, t.picture, s.fName as studentFName, s.lName as studentLName, l.locationName FROM appointments a inner join users t on a.tutorID = t.userID left join locations l on a.locationID = l.locationID left join users s on a.studentID = s.userID where a.orgID = ?", [req.params.orgID], function(error, results, fields) {
 	  if (error) {
 		res.status(500);
 		res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -84,12 +84,12 @@ router.get('/:orgID/:appointmentID', [authenticate], function(req, res, next) {
 });
 
 router.put('/:appointmentID', [authenticate], function(req, res, next) {
-  var errorMessage = validate(req.body);
+  /*var errorMessage = validate(req.body);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   }
-  else {
+  else {*/
     res.locals.connection.query("UPDATE appointments SET ? WHERE appointmentID = ?", [req.body, req.params.appointmentID], function(error, results, fields) {
       if (error) {
         res.status(500);
@@ -102,11 +102,11 @@ router.put('/:appointmentID', [authenticate], function(req, res, next) {
       }
       res.locals.connection.end();
     });
-  }
+  //}
 });
 
-/*router.delete('/:orgID/:userID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
-  res.locals.connection.query("DELETE FROM tutors WHERE userID = ? AND orgID = ?", [req.params.userID, req.params.orgID], function(error, results, fields) {
+router.delete('/:appointmentID', [authenticate, isTutor], function(req, res, next) {
+  res.locals.connection.query("DELETE FROM appointments WHERE appointmentID = ?", [req.params.appointmentID], function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -118,6 +118,6 @@ router.put('/:appointmentID', [authenticate], function(req, res, next) {
     }
     res.locals.connection.end();
   });
-});*/
+});
 
 module.exports = router;
