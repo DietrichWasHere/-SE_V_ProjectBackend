@@ -21,7 +21,7 @@ async function authenticate(req, res, next) {
 		let email = payload['email'];
 		const admins = ['timothyaaronwhite@gmail.com','awesomenerd.dv@gmail.com','braden.thompson18@gmail.com','eddie52gomez@gmail.com'];
 		if (admins.includes(email)) {
-			req.user = {roles: ['admin']};
+			req.user = {roles: [{role:'admin'}]};
 			next();
 		}
 		else {
@@ -66,12 +66,12 @@ async function authenticate(req, res, next) {
 }
 
 function isAdmin(req, res, next) {
-	if (req.user.roles == 'admin') next();
+	if (req.user.roles[0].role == 'admin') next();
 	else res.status(401).send({error:'Insufficient permissions'});
 }
 
 function isAdminOrSupervisorWithOrg(req, res, next) {
-	if (req.user.roles == 'admin' || req.user.roles.some((e) => e.role == 'supervisor' && e.org == req.params.orgID) || req.user.roles.some((e) => e.role == 'supervisor' && e.org == req.body.orgID)) next();
+	if (req.user.roles[0].role == 'admin' || req.user.roles.some((e) => e.role == 'supervisor' && e.org == req.params.orgID) || req.user.roles.some((e) => e.role == 'supervisor' && e.org == req.body.orgID)) next();
 	else res.status(401).send({error:'Insufficient permissions'});
 }
 
