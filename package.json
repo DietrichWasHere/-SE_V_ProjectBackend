@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node app.js",
-    "bundle": "mkdir deploy && cp -r config routes app.js package.json package-lock.json deploy && rm deploy/config/db.config.json && mv deploy/config/prod.db.config.json deploy/config/db.config.json"
+    "bundle": "mkdir deploy && cp -r config controllers routes app.js package.json package-lock.json deploy && rm deploy/config/db.config.json && mv deploy/config/prod.db.config.json deploy/config/db.config.json"
   },
   "dependencies": {
     "body-parser": "^1.19.1",
