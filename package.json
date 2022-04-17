@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node app.js",
-    "bundle": "mkdir deploy && cp -r config routes app.js package.json package-lock.json deploy && rm deploy/config/db.config.json && mv deploy/config/prod.db.config.json deploy/config/db.config.json"
+    "bundle": "mkdir deploy && cp -r config controllers routes app.js package.json package-lock.json deploy && rm deploy/config/db.config.json && mv deploy/config/prod.db.config.json deploy/config/db.config.json"
   },
   "dependencies": {
     "body-parser": "^1.19.1",
@@ -16,6 +16,7 @@
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "mysql": "^2.18.1",
-    "pug": "^2.0.0-beta11"
+    "pug": "^2.0.0-beta11",
+    "twilio": "^3.76.1"
   }
 }

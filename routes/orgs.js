@@ -28,9 +28,21 @@ router.get('/', [authenticate, isAdmin], function(req, res, next) {
   });
 });
 
-
 router.get('/:orgID', [authenticate, isInOrg], function(req, res, next) {
   res.locals.connection.query("SELECT * FROM orgs WHERE orgID = ?", req.params.orgID, function(error, results, fields) {
+    if (error) {
+      res.status(500);
+      res.send(JSON.stringify({ status: 500, error: error, response: null }));
+    } else {
+      res.status(200);
+      res.send(JSON.stringify(results));
+    }
+    res.locals.connection.end();
+  });
+});
+
+router.get('/name/:orgName', function(req, res, next) {
+  res.locals.connection.query("SELECT * FROM orgs WHERE replace(orgName, ' ', '') = ?", req.params.orgName, function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
