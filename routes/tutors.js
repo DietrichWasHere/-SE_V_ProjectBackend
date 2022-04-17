@@ -30,16 +30,16 @@ router.get('/:orgID', [authenticate, isAdminOrSupervisorWithOrg], function(req, 
     }
     res.locals.connection.end();
   });
-});
+});*/
 
-router.put('/:userID/:orgID', [authenticate, isAdminOrSameAdvisor], function(req, res, next) {
-  var errorMessage = validate(req.body);
+router.put('/:userID/:orgID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
+  /*var errorMessage = validate(req.body);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   }
-  else {
-    res.locals.connection.query("UPDATE tutors SET ? WHERE userID=? and orgID = ?", [req.body, req.params.advisorID], function(error, results, fields) {
+  else {*/
+    res.locals.connection.query("UPDATE tutors SET ? WHERE userID=? and orgID = ?", [req.body, req.params.userID, req.params.orgID], function(error, results, fields) {
       if (error) {
         res.status(500);
         res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -51,8 +51,8 @@ router.put('/:userID/:orgID', [authenticate, isAdminOrSameAdvisor], function(req
       }
       res.locals.connection.end();
     });
-  }
-});*/
+  //}
+});
 
 router.post('/', [authenticate, isSameUser], function(req, res, next) {
   /*var errorMessage = validate(req.body);
