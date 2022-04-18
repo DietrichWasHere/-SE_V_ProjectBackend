@@ -18,7 +18,7 @@ router.get('/', [authenticate], function(req, res, next) {
   });
 
 router.get('/:tutorID', [authenticate], function(req, res, next) {
-  res.locals.connection.query("SELECT * FROM subjects s natural join tutorsubjects t where t.tutorID = ?", req.params.tutorID, function(error, results, fields) {
+  res.locals.connection.query("SELECT * FROM subjects s natural join tutorSubjects t where t.tutorID = ?", req.params.tutorID, function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -39,7 +39,8 @@ router.put('/:subjectID', [authenticate, isTutor], function(req, res, next) {
 	  res.send(errorMessage);
 	}
 	else {*/
-	  res.locals.connection.query("UPDATE tutorsubjects SET ? WHERE subjectID = ? AND tutorID = ?", [req.body, req.params.subjectID, req.user.id], function(error, results, fields) {
+	  res.locals.connection.query("UPDATE tutorSubjects SET ? WHERE subjectID = ? AND tutorID = ?", [req.body, req.params.subjectID, req.user.id], function(error, results, fields) {
+
 		if (error) {
 		  res.status(500);
 		  res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -61,7 +62,8 @@ router.post('/', [authenticate, isTutor], function(req, res, next) {
 	  res.send(errorMessage);
 	}
 	else {*/
-		res.locals.connection.query("INSERT INTO tutorsubjects SET ?", req.body, function(error, results, fields) {
+		res.locals.connection.query("INSERT INTO tutorSubjects SET ?", req.body, function(error, results, fields) {
+
 		if (error) {
 		  res.status(500);
 		  res.send(JSON.stringify({ status: 500, error: error, response: null }));
@@ -77,7 +79,7 @@ router.post('/', [authenticate, isTutor], function(req, res, next) {
   });
   
   router.delete('/:subjectID', [authenticate, isTutor], function(req, res, next) {
-	res.locals.connection.query("DELETE FROM tutorsubjects WHERE tutorID = ? and subjectID = ?", [req.user.id, req.params.subjectID], function(error, results, fields) {
+	res.locals.connection.query("DELETE FROM tutorSubjects WHERE tutorID = ? and subjectID = ?", [req.user.id, req.params.subjectID], function(error, results, fields) {
 	  if (error) {
 		res.status(500);
 		res.send(JSON.stringify({ status: 500, error: error, response: null }));
