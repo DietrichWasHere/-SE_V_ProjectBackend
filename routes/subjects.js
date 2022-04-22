@@ -77,7 +77,22 @@ router.post('/', [authenticate, isTutor], function(req, res, next) {
 	  });
 	//}
   });
-  
+
+  router.delete('/', [authenticate, isTutor], function(req, res, next) {
+	res.locals.connection.query("DELETE FROM tutorSubjects WHERE tutorID = ?", [req.user.id], function(error, results, fields) {
+	  if (error) {
+		res.status(500);
+		res.send(JSON.stringify({ status: 500, error: error, response: null }));
+		//If there is error, we send the error in the error section with 500 status
+	  } else {
+		res.status(200);
+		res.send(JSON.stringify(results));
+		//If there is no error, all is good and response is 200OK.
+	  }
+	  res.locals.connection.end();
+	});
+  });
+
   router.delete('/:subjectID', [authenticate, isTutor], function(req, res, next) {
 	res.locals.connection.query("DELETE FROM tutorSubjects WHERE tutorID = ? and subjectID = ?", [req.user.id, req.params.subjectID], function(error, results, fields) {
 	  if (error) {

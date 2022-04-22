@@ -3,6 +3,22 @@ const { authenticate, isAdmin, isSameUser, isNewUser, isAdminOrSupervisorWithOrg
 var router = express.Router();
 
 /* GET tutors listing. */
+router.get('/', [authenticate], function(req, res, next) {
+  res.locals.connection.query("SELECT count(*) FROM tutors where userID = ?", req.user.id, function(error, results, fields) {
+    if (error) {
+      res.status(500);
+      res.send(JSON.stringify({ status: 500, error: error, response: null }));
+      //If there is error, we send the error in the error section with 500 status
+    } else {
+      res.status(200);
+      res.send(JSON.stringify(results));
+      //If there is no error, all is good and response is 200OK.
+    }
+    res.locals.connection.end();
+  });
+});
+
+/* GET tutors listing. */
 router.get('/:orgID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
   res.locals.connection.query("SELECT * FROM tutors INNER JOIN users on tutors.userID = users.userID where orgID = ?", req.params.orgID, function(error, results, fields) {
     if (error) {
