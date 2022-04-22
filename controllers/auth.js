@@ -35,7 +35,7 @@ async function authenticate(req, res, next) {
 								req.user.roles.push({role: 'supervisor', org: results[i].orgID});
 							}
 						}
-						res.locals.connection.query("SELECT * FROM tutors WHERE userID = ?", userID, function(error, results, fields) {
+						res.locals.connection.query("SELECT * FROM tutors WHERE userID = ? AND verified = 1", userID, function(error, results, fields) {
 							if (!error && results.length) {
 								for (i in results) {
 									req.user.roles.push({role: 'tutor', org: results[i].orgID});
