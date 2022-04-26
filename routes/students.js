@@ -4,7 +4,7 @@ var router = express.Router();
 
 /* GET student listing for org. */
 router.get('/org/:orgID', [authenticate, isAdminOrSupervisorWithOrg], function(req, res, next) {
-  res.locals.connection.query("SELECT * FROM students where orgID = ?", req.params.orgID, function(error, results, fields) {
+  res.locals.connection.query("SELECT * FROM students s natural join users u where s.orgID = ?", req.params.orgID, function(error, results, fields) {
     if (error) {
       res.status(500);
       res.send(JSON.stringify({ status: 500, error: error, response: null }));
